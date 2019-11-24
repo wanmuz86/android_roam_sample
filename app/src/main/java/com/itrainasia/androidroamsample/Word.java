@@ -7,11 +7,14 @@ import androidx.room.ForeignKey;
 import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
+import static androidx.room.ForeignKey.CASCADE;
+
 @Entity(tableName = "word_table",
         foreignKeys = {
         @ForeignKey(entity = Book.class,
                         parentColumns = "id",
-                        childColumns = "book_id")
+                        childColumns = "book_id",
+                        onDelete = CASCADE)
         })
 public class Word {
 
@@ -23,7 +26,7 @@ public class Word {
     private String description;
 
     @ColumnInfo(name = "book_id")
-    public int bookId;
+    public long bookId;
 
     public String getDescription() {
         return description;
@@ -33,11 +36,11 @@ public class Word {
         this.description = description;
     }
 
-    public int getBookId() {
+    public long getBookId() {
         return bookId;
     }
 
-    public void setBookId(int bookId) {
+    public void setBookId(long bookId) {
         this.bookId = bookId;
     }
 

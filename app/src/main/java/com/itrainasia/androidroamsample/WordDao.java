@@ -3,6 +3,7 @@ package com.itrainasia.androidroamsample;
 import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.Query;
+import androidx.room.Update;
 
 import java.util.List;
 
@@ -17,6 +18,9 @@ public interface WordDao {
 
     @Query("SELECT * FROM word_table")
     List<Word> getAllWords();
+
+    @Update
+    void update(Word word);
 
 //    @Query("SELECT * FROM  word_table WHERE word=:name")
 //    Word getWordByName(String name);

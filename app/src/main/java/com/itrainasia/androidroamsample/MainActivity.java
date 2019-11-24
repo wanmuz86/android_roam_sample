@@ -6,16 +6,19 @@ import android.os.Bundle;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import java.util.List;
 
@@ -49,7 +52,15 @@ public class MainActivity extends AppCompatActivity {
         //2) Instatiate the ViewModel
         bookViewModel = ViewModelProviders.of(this).get(BookViewModel.class);
 
-        final CustomAdapter adapter = new CustomAdapter();
+        final CustomAdapter adapter = new CustomAdapter(new CustomAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(Book book) {
+                Intent intent  = new Intent(MainActivity.this, DetailActivity.class);
+                //intent.putExtra("itemId",book.getId());
+                intent.putExtra("item",book);
+                startActivity(intent);
+            }
+        });
         recyclerView.setAdapter(adapter);
 
         bookViewModel.getAllBooks().observe(this, new Observer<List<Book>>() {
@@ -59,6 +70,23 @@ public class MainActivity extends AppCompatActivity {
                 adapter.notifyDataSetChanged();
             }
         });
+
+        ItemTouchHelper helper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0,ItemTouchHelper.LEFT |
+                ItemTouchHelper.RIGHT) {
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                int position = viewHolder.getAdapterPosition();
+                Book book = adapter.getBookAtPosition(position);
+                Toast.makeText(getApplicationContext(), "Book "+book.getName()+" is deleted",Toast.LENGTH_LONG).show();
+                bookViewModel.delete(book);
+            }
+        });
+        helper.attachToRecyclerView(recyclerView);
     }
 
     @Override
@@ -78,6 +106,10 @@ public class MainActivity extends AppCompatActivity {
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
+        }
+        else if (id == R.id.action_delete_all){
+            Toast.makeText(getApplicationContext(), "Delete all item",Toast.LENGTH_LONG ).show();
+            bookViewModel.deleteAll();
         }
 
         return super.onOptionsItemSelected(item);

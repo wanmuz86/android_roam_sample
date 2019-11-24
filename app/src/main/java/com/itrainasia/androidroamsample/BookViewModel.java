@@ -22,7 +22,18 @@ public class BookViewModel extends AndroidViewModel {
     }
 
     LiveData<List<Book>> getAllBooks(){ return mAllBooks;};
+    LiveData<List<Word>> getWordByBooks(long id) {return mRoomRepository.getAllWordsByBook(id);}
 
     public void insert(Book book) { mRoomRepository.insert(book);}
+
+    public void deleteAll(){ mRoomRepository.deleteAll();}
+
+    public void delete(Book book) {
+        mRoomRepository.deleteBook(book);
+    }
+
+
+
+    public LiveData<Book> getBookById(long id){ return mRoomRepository.getBookById(id); }
 
 }
